@@ -282,6 +282,7 @@ const resultToHTML = (ret) => {
   c.addEventListener("input", update);
   document.body.append(element({
     tag: "div",
+    style: { fontSize: "x-large" },
     children: [
       a,
       element({
