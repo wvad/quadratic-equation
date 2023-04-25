@@ -232,6 +232,7 @@ const resultToHTML = (ret) => {
   const b = element({ tag: "input" });
   const c = element({ tag: "input" });
   a.type = b.type = c.type = "text";
+  a.placeholder = b.placeholder = c.placeholder = "0";
   a.size = b.size = c.size = 5;
   const ans = element({
     tag: "div",
