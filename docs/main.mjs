@@ -240,8 +240,7 @@ const resultToHTML = (ret) => {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      padding: "6px 0px",
-      textAlign: "center"
+      padding: "6px 0px"
     }
   });
   const loadingText = document.createElement("div");
