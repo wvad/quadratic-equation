@@ -285,7 +285,8 @@ const resultToHTML = (ret) => {
     tag: "div",
     style: {
       fontSize: "x-large",
-      textAlign: "center"
+      textAlign: "center",
+      padding: "10px 0px"
     },
     children: [
       a,
