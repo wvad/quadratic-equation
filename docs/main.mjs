@@ -231,18 +231,23 @@ const resultToHTML = (ret) => {
           tag: "span",
           children: [`${ret[0]}`]
         }));
-      const plusmn = element("span");
+      const plusmn = element({ tag: "span" });
       first.appendChild(plusmn);
       plusmn.innerHTML = "&plusmn;";
       if (1n !== ret[1]) plusmn.textContent += ret[1];
       plusmn.innerHTML += "&radic;";
-      first.appendChild(element({
+      if (ret[2] !== -1) first.appendChild(element({
         tag: "span",
         style: {
           textDecorationLine: "overline"
         },
-        children: [`${ret[2]}`]
+        children: [`${abs(ret[2])}`]
       }));
+      if (ret[2] < 0) {
+        const imag = element({ tag: "span" });
+        imag.innerHTML += "i";
+        first.appendChild(imag);
+      }
       return element({
         tag: "div",
         style: {
