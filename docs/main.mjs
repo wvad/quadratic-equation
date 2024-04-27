@@ -1,13 +1,12 @@
-const { BigInt, Number, NaN, requestAnimationFrame } = globalThis;
-const { MAX_SAFE_INTEGER } = Number;
+const { BigInt, requestAnimationFrame } = globalThis;
 const { assign } = Object;
-const { sqrt, floor } = Math;
 const { setPrototypeOf } = Reflect;
 const requestAnimationFrameCallback = r => requestAnimationFrame(r);
 const createElement = document.createElement.bind(document);
 const isWithPrefix = RegExp.prototype.exec.bind(
   Object.setPrototypeOf(/^0(?:b[01]+|o[0-7]+|x[\da-f]+)$/i, null)
 );
+const abs = x => x < 0 ? -x : x;
 const addTypeInfo = (o, type) => {
   setPrototypeOf(o, null);
   o.type = type;
@@ -68,25 +67,42 @@ const solveQuadratic = async (a, b, c) => {
       [k, m],
       [l, n]
     ], "rat");
-  }
-  let k = -b, l = 1n, m = d, n = 2n * a;
+  } else {
+    let k = -b, l = 1n, m = d, n = 2n * a;
 
-  while (!(m % 4n)) m /= 4n, l *= 2n;
-  for (let i = 3n; i <= rootD; i += 2n) {
-    const sq = i ** 2n;
-    while (!(m % sq)) m /= sq, l *= i;
-    if (!(i % 131071n)) await new Promise(requestAnimationFrameCallback);
-  }
+    while (!(m % 4n)) m /= 4n, l *= 2n;
+    for (let i = 3n; i <= rootD; i += 2n) {
+      const sq = i ** 2n;
+      while (!(m % sq)) m /= sq, l *= i;
+      if (!(i % 131071n)) await new Promise(requestAnimationFrameCallback);
+    }
 
-  if (k && l && n) {
-    const cd = divEuclid(divEuclid(l, k), n);
-    k /= cd, l /= cd, n /= cd;
-  } else if (l && n) {
-    const cd = divEuclid(l, n);
-    l /= cd, n /= cd;
+    if (k && l && n) {
+      const cd = divEuclid(divEuclid(l, k), n);
+      k /= cd, l /= cd, n /= cd;
+    } else if (l && n) {
+      const cd = divEuclid(l, n);
+      l /= cd, n /= cd;
+    }
+    if (m === 1n) {
+      ({ k , l } = { k: k + l, l: k - l });
+      m = n;
+      if (k && m) {
+        const cd1 = divEuclid(k, m);
+        k /= cd1, m /= cd1;
+      }
+      if (l && n) {
+        const cd2 = divEuclid(l, n);
+        l /= cd2, n /= cd2;
+      }
+      return addTypeInfo([
+        [k, m],
+        [l, n]
+      ], "rat");
+    }
+    if (l < 0) l = -l;
+    return addTypeInfo([k, l, m, n], "irr");
   }
-  if (l < 0) l = -l;
-  return addTypeInfo([k, l, m, n], "irr");
 };
 const element = ({ tag, style = {}, children = [] }) => {
   const e = createElement(tag);
@@ -127,7 +143,7 @@ const resultToHTML = (ret) => {
         style: {
           textAlign: "center"
         },
-        children: [`${ret[0][0]}`]
+        children: [`${abs(ret[0][0])}`]
       })];
       if (0n !== ret[0][0] && 1n !== ret[0][1])
         children1.push(element({
@@ -143,7 +159,7 @@ const resultToHTML = (ret) => {
         style: {
           textAlign: "center"
         },
-        children: [`${ret[1][0]}`]
+        children: [`${abs(ret[1][0])}`]
       })];
       if (0n !== ret[1][0] && 1n !== ret[1][1])
         children2.push(element({
@@ -154,6 +170,39 @@ const resultToHTML = (ret) => {
           },
           children: [`${ret[1][1]}`]
         }));
+      const pChildren = [];
+      if (ret[0][0] < 0) pChildren.push(element({
+        tag: "div",
+        children: [element({
+          tag: "span",
+          style: { whiteSpace: "pre" },
+          children: ["\uff0D"]
+        })]
+      }));
+      pChildren.push(element({
+        tag: "div",
+        children: children1
+      }));
+      pChildren.push(element({
+        tag: "div",
+        children: [element({
+          tag: "span",
+          style: { whiteSpace: "pre" },
+          children: [", "]
+        })]
+      }));
+      if (ret[1][0] < 0) pChildren.push(element({
+        tag: "div",
+        children: [element({
+          tag: "span",
+          style: { whiteSpace: "pre" },
+          children: ["\uff0D"]
+        })]
+      }));
+      pChildren.push(element({
+        tag: "div",
+        children: children2
+      }));
       return element({
         tag: "div",
         style: {
@@ -166,22 +215,7 @@ const resultToHTML = (ret) => {
             flexDirection: "row",
             alignItems: "center"
           },
-          children: [element({
-            tag: "div",
-            children: children1
-          }),
-          element({
-            tag: "div",
-            children: [element({
-              tag: "span",
-              style: { whiteSpace: "pre" },
-              children: [", "]
-            })]
-          }),
-          element({
-            tag: "div",
-            children: children2
-          })]
+          children: pChildren
         })]
       });
     }
