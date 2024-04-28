@@ -276,7 +276,7 @@ const resultToHTML = (ret) => {
   const ans = element({
     tag: "div",
     style: {
-      display: "flex",
+      display: "inline-flex",
       flexDirection: "row",
       alignItems: "center",
       padding: "6px 0px"
