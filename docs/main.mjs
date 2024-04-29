@@ -235,14 +235,16 @@ const resultToHTML = (ret) => {
       first.appendChild(plusmn);
       plusmn.innerHTML = "&plusmn;";
       if (1n !== ret[1]) plusmn.textContent += ret[1];
-      plusmn.innerHTML += "&radic;";
-      if (ret[2] !== -1) first.appendChild(element({
-        tag: "span",
-        style: {
-          textDecorationLine: "overline"
-        },
-        children: [`${abs(ret[2])}`]
-      }));
+      if (ret[2] !== -1n) {
+        plusmn.innerHTML += "&radic;";
+        first.appendChild(element({
+          tag: "span",
+          style: {
+            textDecorationLine: "overline"
+          },
+          children: [`${abs(ret[2])}`]
+        }));
+      }
       if (ret[2] < 0) {
         const imag = element({ tag: "span" });
         imag.innerHTML += "i";
