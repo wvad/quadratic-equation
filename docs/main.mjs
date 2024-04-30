@@ -322,6 +322,8 @@ const resultToHTML = (ret) => {
   a.addEventListener("input", update);
   b.addEventListener("input", update);
   c.addEventListener("input", update);
+  const x2ex = element({ tag: "span", style: { whiteSpace: "pre" } });
+  x2ex.innerHTML = "x&#178; + ";
   document.body.append(element({
     tag: "div",
     style: {
@@ -331,11 +333,7 @@ const resultToHTML = (ret) => {
     },
     children: [
       a,
-      element({
-        tag: "span",
-        style: { whiteSpace: "pre" },
-        children: ["x^2 + "]
-      }),
+      x2ex,
       b,
       element({
         tag: "span",
